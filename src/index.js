@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './components/app/App';
+import MarvelService from './services/MarvelService.js';
 import './style/style.scss';
 
 ReactDOM.render(
