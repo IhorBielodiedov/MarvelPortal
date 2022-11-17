@@ -1,53 +1,33 @@
 import './charInfo.scss';
-import { Component } from 'react';
-import thor from '../../resources/img/thor.jpeg';
+import { useState, useEffect } from 'react';
+
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/errorMessage';
 import MarvelService from '../../services/MarvelService';
 import Skeleton from '../skeleton/Skeleton';
 
-class CharInfo extends Component {
-
-    state = {
-        char: null,
-        loading: false,
-        error: false
-    }
+const CharInfo = (props) => {
+    const [char, setChar] = useState(null);
  
-    marvelService = new MarvelService();
+    const {loading, error, getCharacter, clearError} = MarvelService();
 
-    componentDidMount () {
-        this.updateChar();
-    }
+    useEffect(() => {
+        updateChar();
+    }, [props.charId])
 
-    componentDidUpdate (prevProps) {
-        if(this.props.charId !== prevProps.charId){
-            this.updateChar();
-        }
-    }
-
-    updateChar = () => {
-        const {charId} = this.props;
+    const updateChar = () => {
+        const {charId} = props;
         if(!charId){
             return;
         }
-
-        this.setState({loading: true})
-
-        this.marvelService.getCharacter(charId).then(this.onCharLoaded).catch(this.onError);
+        clearError();
+        getCharacter(charId).then(onCharLoaded);
 
     }
 
-    onCharLoaded = (char) => {
-        this.setState({char, loading: false})
+    const onCharLoaded = (char) => {
+        setChar(char);
     }
-
-    onError = () => {
-        this.setState({error: true, loading: false})
-    }
-
-    render() {
-        const {char, loading, error} = this.state;
 
         const skeleton = char || loading || error ? null : <Skeleton/>;
         const errorMessage = error ? <ErrorMessage/> : null;
@@ -62,7 +42,7 @@ class CharInfo extends Component {
             {content}
         </div>
     )}
-}
+
 const View = ({char}) => {
     const {name, description, thumbnail, homepage, wiki, comics} = char;
     let imgStyle = {'objectFit' : 'cover'};
