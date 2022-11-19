@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/errorMessage';
+import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
 const CharList = (props) => {
 
@@ -48,30 +49,33 @@ const CharList = (props) => {
                 imgStyle = {'objectFit' : 'unset'};
             }
             return (
-            <li 
-                className="char__item"
-                tabIndex={0}
-                ref={el => itemRefs.current[i] = el}
-                key={element.id}
-                onClick={() => {
-                    props.onCharSelected(element.id)
-                    focusOnItem(i);
-                }}
-                onKeyPress={(e)=>{
-                    if(e.key === ' ' || e.key === "Enter") {
-                        props.onCharSelected(element.id);
+            <CSSTransition key={element.id} timeout={500} classNames="char__item">
+                <li 
+                    className="char__item"
+                    tabIndex={0}
+                    ref={el => itemRefs.current[i] = el}
+                    onClick={() => {
+                        props.onCharSelected(element.id)
                         focusOnItem(i);
-                    }
-                }}
-                >
-                <img src={element.thumbnail} alt="abyss" style={imgStyle}/>
-                <div className="char__name">{element.name}</div>
-            </li>
+                    }}
+                    onKeyPress={(e)=>{
+                        if(e.key === ' ' || e.key === "Enter") {
+                            props.onCharSelected(element.id);
+                            focusOnItem(i);
+                        }
+                    }}
+                    >
+                    <img src={element.thumbnail} alt="abyss" style={imgStyle}/>
+                    <div className="char__name">{element.name}</div>
+                </li>
+            </CSSTransition>
             )
         })
         return (
             <ul className="char__grid">
-                {elements}
+                <TransitionGroup component={null}>
+                    {elements}
+                </TransitionGroup>
             </ul>
         )
     }
