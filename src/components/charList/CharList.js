@@ -1,6 +1,8 @@
 import './charList.scss';
 import { useState, useEffect, useRef } from 'react';
 import MarvelService from '../../services/MarvelService';
+import Spinner from '../spinner/Spinner';
+import ErrorMessage from '../errorMessage/errorMessage';
 
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
@@ -13,7 +15,7 @@ const setContent = (process, Component, newItemLoading) => {
             return newItemLoading ? <Component/> : <Spinner/>;
             break;
         case 'confirmed':
-            return <Component data={data}/>;
+            return <Component/>;
             break;
         case 'error':
             return <ErrorMessage/>
@@ -39,7 +41,7 @@ const CharList = (props) => {
 
     const onRequest   = (offset, initial) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
-        getAllCharacters(offset).then(onCharLoaded).then(() => setProcess('confirmed'));;
+        getAllCharacters(offset).then(onCharLoaded).then(() => setProcess('confirmed'));
     }
 
     const onCharLoaded = (newChar) => {
@@ -102,7 +104,6 @@ const CharList = (props) => {
         return (
             <div className="char__list">
                 {setContent(process, () => renderItems(char), newItemLoading)}
-                
                 <button className="button button__main button__long"
                         disabled={newItemLoading}
                         style={{'display': charEnded ? 'none' : 'block'}}

@@ -2,16 +2,15 @@ import './singleCharacterLayout.scss';
 import {Link, useParams} from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/errorMessage';
 import MarvelService from '../../services/MarvelService';
+import setContent from '../../utils/setContent';
 
 const SingleCharacterLayout = () => {
 
     const {charId} = useParams();
     const [char, setChar] = useState(null);
     
-    const {loading, error, getCharacter, clearError} = MarvelService();
+    const {getCharacter, clearError, process, setProcess} = MarvelService();
 
     useEffect(() => {
         updateChar();
@@ -19,29 +18,23 @@ const SingleCharacterLayout = () => {
 
     const updateChar = () => {
         clearError();
-        getCharacter(charId).then(onCharLoaded);
+        getCharacter(charId).then(onCharLoaded).then(() => setProcess('confirmed'));
     }
 
     const onCharLoaded = (char) => {
         setChar(char);
     }
 
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading ? <Spinner/> : null;
-    const content = !(loading || error || !char) ? <View char={char}/> : null;
-
     return (
         <>
-            {errorMessage}
-            {spinner}
-            {content}
+            {setContent(process, View, char)}
         </>
     )
 }
 
-const View = ({char}) => {
+const View = ({data}) => {
 
-    const {name, description, thumbnail} = char;
+    const {name, description, thumbnail} = data;
 
     return (
         <div className="single-comic">
